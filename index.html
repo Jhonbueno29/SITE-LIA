@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para meu amor</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .particle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 3s ease-in-out, opacity 3s ease-in-out;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        #particle-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .heart {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff4d4d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 10px;
+            height: 10px;
+            animation: floatEffect 4s ease-in-out infinite;
+        }
+
+        @keyframes floatEffect {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px) scale(1.05); }
+            100% { transform: translateY(0px); }
+        }
+
+        .photo {
+            position: absolute;
+            height: auto;
+            opacity: 0;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(255,255,255,0.3);
+            animation: photoPopIn 2s forwards;
+        }
+
+        @keyframes photoPopIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .p1 { width: 155px; top: 20px; left: 20px; animation-delay: 4s; }
+        .p2 { width: 290px; top: 20px; right: 20px; animation-delay: 5s; }
+        .p3 { width: 155px; bottom: 20px; left: 20px; animation-delay: 6s; }
+        .p4 { width: 155px; bottom: 20px; right: 20px; animation-delay: 7s; }
+        .p5 { width: 155px; top: 35%; left: 20px; animation-delay: 8s; }
+        .p6 { width: 155px; top: 30%; right: 20px; animation-delay: 9s; }
+
+        
+    </style>
+</head>
+<body>
+    <!-- Tela inicial com botão -->
+    <div id="start-screen" style="
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: #0a0a0a;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        z-index: 9999;
+        text-align: center;
+    ">
+        <h1 style="font-size: 2em; margin-bottom: 20px;">Tenho algo para você 💌</h1>
+        <button id="start-button" style="
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        ">Clique Aqui </button>
+    </div>
+
+    <!-- Container da animação -->
+    <div id="particle-container" style="display: none;"></div>
+
+    <!-- Fotos fixas com animação -->
+    <img src="abraco.jpg" class="photo p1">
+    <img src="abracosentado.jpg" class="photo p2">
+    <img src="beijonabucheca.jpg" class="photo p3">
+    <img src="buque.jpg" class="photo p4">
+    <img src="olhosdela.JPG" class="photo p5">
+    <img src="primeirodate.jpg" class="photo p6">
+
+    <!-- Música -->
+    <audio id="bg-music" loop>
+        <source src="musicaamor.mp3" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+    </audio>
+
+    <script>
+        const startButton = document.getElementById('start-button');
+        const startScreen = document.getElementById('start-screen');
+        const particleContainer = document.getElementById('particle-container');
+        const music = document.getElementById('bg-music');
+
+        startButton.addEventListener('click', () => {
+            music.play().then(() => {
+                startScreen.style.display = 'none';
+                setTimeout(() => {
+                    particleContainer.style.display = 'block';
+                    startAnimation();
+                }, 100);
+            }).catch(err => {
+                alert("Clique para habilitar o som.");
+                console.error("Erro ao tocar música:", err);
+            });
+        });
+
+        function startAnimation() {
+            const container = document.getElementById('particle-container');
+            const numHearts = 1500;
+            const particles = [];
+
+            for (let i = 0; i < numHearts; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.style.animationDelay = `${Math.random() * 4}s`;
+                particle.appendChild(heart);
+                container.appendChild(particle);
+                particles.push(particle);
+            }
+
+            const textToPoints = (message, fontSize, canvasWidth, canvasHeight) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+                if (!ctx) return [];
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                const points = [];
+                const step = 4;
+                for (let y = 0; y < canvas.height; y += step) {
+                    for (let x = 0; x < canvas.width; x += step) {
+                        if (data[(y * canvas.width + x) * 4 + 3] > 128) {
+                            points.push({ x, y });
+                        }
+                    }
+                }
+                return points;
+            };
+
+            const heartToPoints = (numPoints, scale, centerX, centerY) => {
+                const points = [];
+                const step = (2 * Math.PI) / numPoints;
+                for (let t = 0; t < 2 * Math.PI; t += step) {
+                    const x = centerX + scale * 16 * Math.pow(Math.sin(t), 3);
+                    const y = centerY - scale * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+                    points.push({ x, y });
+                }
+                return points;
+            };
+
+            const moveToPoints = (targetPoints) => {
+                const shuffledPoints = [...targetPoints].sort(() => 0.5 - Math.random());
+                particles.forEach((particle, index) => {
+                    let target;
+                    if (index < shuffledPoints.length) {
+                        target = shuffledPoints[index];
+                        particle.style.opacity = '1';
+                    } else {
+                        target = {
+                            x: Math.random() * container.clientWidth,
+                            y: Math.random() * container.clientHeight
+                        };
+                        particle.style.opacity = '0';
+                    }
+                    particle.style.transform = `translate(${target.x}px, ${target.y}px)`;
+                });
+            };
+
+            const floatRandomly = () => {
+                particles.forEach((particle, i) => {
+                    const x = Math.random() * container.clientWidth;
+                    const y = Math.random() * container.clientHeight;
+                    particle.style.transitionDelay = `${i * 2}ms`;
+                    particle.style.transform = `translate(${x}px, ${y}px)`;
+                    particle.style.opacity = '0.7';
+                });
+                setTimeout(() => {
+                    particles.forEach(particle => particle.style.transitionDelay = '0ms');
+                }, numHearts * 2 + 500);
+            };
+
+            const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+            const runAnimationCycle = async () => {
+                const messages = ["Tudo em você me encanta","É amor, só nós dois", "Te amar é a melhor parte da vida"];
+                const viewportWidth = container.clientWidth;
+                let fontSize = 74;
+                if (viewportWidth < 768) fontSize = 55;
+                if (viewportWidth < 480) fontSize = 38;
+
+                await sleep(1000);
+                moveToPoints(textToPoints(messages[0], fontSize, container.clientWidth, container.clientHeight));
+                await sleep(5000);
+
+                floatRandomly();
+                await sleep(4000);
+
+                moveToPoints(textToPoints(messages[1], fontSize, container.clientWidth, container.clientHeight));
+                await sleep(5000);
+
+                floatRandomly();
+                await sleep(4000);
+
+                const centerX = container.clientWidth / 2;
+                const centerY = container.clientHeight / 2;
+
+                const loveYouFontSize = (viewportWidth < 480) ? 30 : 50;
+                const loveYouPoints = textToPoints("TE AMO LIA", loveYouFontSize, container.clientWidth, container.clientHeight);
+                const availableHeartPoints = numHearts - loveYouPoints.length;
+                const heartScale = (viewportWidth < 480) ? 8 : 12;
+                const heartPoints = heartToPoints(availableHeartPoints > 0 ? availableHeartPoints : 0, heartScale, centerX, centerY);
+
+                const finalShapePoints = [...heartPoints, ...loveYouPoints];
+                moveToPoints(finalShapePoints);
+            };
+
+            floatRandomly();
+            setTimeout(runAnimationCycle, numHearts * 2 + 500);
+            window.addEventListener('resize', floatRandomly);
+        }
+    </script>
+</body>
+</html>
